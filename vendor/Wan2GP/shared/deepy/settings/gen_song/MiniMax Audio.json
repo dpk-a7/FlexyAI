@@ -1,0 +1,14 @@
+{
+    "settings_version": 2.79,
+    "model_type": "minimax_music3",
+    "prompt": "[Verse]\nNeon rain on the city line\nYou hum the tune and I fall in time\n\n[Chorus]\nHold me close and keep the time\nWe can make the whole night shine",
+    "alt_prompt": "Heavy metal / hard rock, aggressive distorted guitars, pounding double-kick drums, powerful gritty male vocals, dark epic atmosphere, driving tempo.",
+    "image_mode": 0,
+    "duration_seconds": 90,
+    "num_inference_steps": 30,
+    "guidance_scale": 1.7,
+    "seed": -1,
+    "audio_prompt_type": "",
+    "prompt_enhancer": "T",
+    "type": "MiniMax Music 3"
+}

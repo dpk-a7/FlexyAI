@@ -1,0 +1,33 @@
+# Install a matched CUDA torch/torchvision/torchaudio set first; see docs/inference.md.
+# Versions of the model stack follow the bundled Wan2GP revision.
+mmgp==3.8.2
+comfy-kitchen==0.2.35
+diffusers==0.36.0
+transformers==4.54.0
+accelerate>=1.1.1
+safetensors>=0.6
+einops>=0.8
+easydict>=1.13
+sentencepiece>=0.2
+ftfy>=6.3
+regex
+iopath>=0.1.10
+numpy>=2.1.2,<3
+Pillow>=11
+av>=14
+scipy>=1.14
+scikit-image>=0.25
+opencv-python>=4.12.0.88
+imageio>=2.36
+imageio-ffmpeg>=0.6
+ffmpeg-python>=0.2
+soundfile>=0.13
+psutil>=6
+tqdm>=4.67
+gguf==0.17.1
+# Imported by the native shared media helpers, even though these apps do not remove backgrounds.
+rembg==2.0.65
+onnxruntime>=1.22
+# Required by the native quantized kernels with the documented Torch 2.10 environment.
+triton-windows>=3.6,<3.7; sys_platform == "win32"
+triton>=3.6,<3.7; sys_platform == "linux"

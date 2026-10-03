@@ -1,0 +1,63 @@
+
+services:
+  # FastAPI and native video workers run on the Windows host in this profile.
+  # Redis is published only on loopback so those host processes can use it.
+  redis:
+    image: redis:7.4-alpine
+    command:
+      - sh
+      - -c
+      - exec redis-server --appendonly yes --appendfsync everysec --requirepass "$${REDIS_PASSWORD}"
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli --no-auth-warning -a \"$${REDIS_PASSWORD}\" ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Nginx reaches the Windows-host FastAPI process through Docker Desktop's
+  # host.docker.internal gateway. It never mounts or serves artifact storage.
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "127.0.0.1:${FLEXY_HTTP_PORT:-8080}:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - backend
+      - edge
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Starting this profile deliberately requires an Ngrok token. It is isolated
+  # from Redis and can reach only Nginx over the edge network.
+  ngrok:
+    image: ngrok/ngrok:latest
+    command: ["http", "nginx:80"]
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN:-}
+    networks:
+      - edge
+    depends_on:
+      nginx:
+        condition: service_started
+    profiles: ["tunnel"]
+    restart: unless-stopped
+
+networks:
+  backend:
+    internal: true
+  edge: {}
+
+volumes:
+  redis_data: {}
